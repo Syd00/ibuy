@@ -12,48 +12,28 @@ public class Product {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    @Column(name = "product_id")
-    private Long productId;
+    @Column(unique = true, nullable = false)
+    private long prodId;
 
-    @Column(name = "name", nullable = false)
-    private String productName;
+    @Column(nullable = false)
+    private String description;
 
-    @Column(name = "description")
-    private String productDesc;
+    @Column(unique = true, nullable = false)
+    private String name;
 
-    @Column(name = "price", nullable = false)
+    @Column(nullable = false)
     private BigDecimal price;
 
-    public Long getProductId() {
-        return productId;
-    }
+    @Column
+    private boolean type; // 0 for physical 1 for digital
 
-    public void setProductId(Long productId) {
-        this.productId = productId;
-    }
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "seller", nullable = false)
+    private User seller;
 
-    public String getProductName() {
-        return productName;
-    }
+    @Column
+    private int qty;
 
-    public void setProductName(String productName) {
-        this.productName = productName;
-    }
-
-    public String getProductDesc() {
-        return productDesc;
-    }
-
-    public void setProductDesc(String productDesc) {
-        this.productDesc = productDesc;
-    }
-
-    public BigDecimal getPrice() {
-        return price;
-    }
-
-    public void setPrice(BigDecimal price) {
-        this.price = price;
-    }
+    @Column
+    private int weight;
 }
