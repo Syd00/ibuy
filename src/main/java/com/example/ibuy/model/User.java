@@ -8,31 +8,12 @@ public class User {
 
     @Column(unique = true, nullable = false)
     private String mail;
-    
     @Id
     @Column(unique = true, nullable = false)
     private String username;
 
     @Column(nullable = false)
     private String password;
-
-    @Column
-    private String pIva;
-
-    @Column
-    private String city;
-
-    @Column
-    private String street;
-
-    @Column
-    private String cap;
-
-    @Column
-    private int num;
-
-    @Column
-    private String sessid;
 
     // getter & setter
     public String getMail() {
@@ -58,6 +39,4 @@ public class User {
     public void setPassword(String password) {
         this.password = password;
     }
-
-    public void setSessid (String sessid) { this.sessid = sessid; }
 }

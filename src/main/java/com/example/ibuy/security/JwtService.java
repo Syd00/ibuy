@@ -31,13 +31,4 @@ public class JwtService {
                 .signWith(key)
                 .compact();
     }
-
-    public String generateRefreshToken(String username, String email) {
-        return Jwts.builder()
-                .subject(username)
-                .claim("email", email)
-                .claim("type", "refresh")
-                .signWith(key)
-                .compact();
-    }
 }
