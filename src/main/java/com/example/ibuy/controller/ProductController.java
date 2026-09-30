@@ -1,6 +1,7 @@
 package com.example.ibuy.controller;
 
 import com.example.ibuy.repository.ProductRepository;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -13,8 +14,8 @@ public class ProductController {
     }
 
     @GetMapping("/products")
-    public void testProduct() {
-        System.out.println("Test ok");
+    public ResponseEntity<String> testProduct() {
+        return ResponseEntity.ok("Ok");
     }
 
 }

@@ -7,6 +7,7 @@ import com.example.ibuy.dto.RegisterResponse;
 import com.example.ibuy.model.User;
 import com.example.ibuy.repository.UserRepository;
 import com.example.ibuy.security.JwtService;
+import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +17,17 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
+import javax.sql.DataSource;
+import javax.xml.crypto.Data;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.HexFormat;
 import java.util.Optional;
 
 @RestController
@@ -23,6 +35,8 @@ public class AuthController {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
+    private DataSource dataSource;
+    private String sessid;
 
     public AuthController(
             UserRepository userRepository,
@@ -57,6 +71,7 @@ public class AuthController {
                 .body(new RegisterResponse(newUser.getMail(), newUser.getUsername()));
     }
 
+    @Transactional
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest request) {
         Optional<User> userOptional = userRepository.findByUsername(request.username());
@@ -71,8 +86,25 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        String token = jwtService.generateToken(user.getUsername(), user.getMail());
+        String username = user.getUsername();
+        String email = user.getMail();
 
-        return ResponseEntity.ok(new LoginResponse(token));
+        String token = jwtService.generateToken(username, email);
+        String refreshToken = jwtService.generateRefreshToken(username, email);
+
+        // calculate hex of refreshToken
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] hash = digest.digest(refreshToken.getBytes(StandardCharsets.UTF_8));
+            sessid = HexFormat.of().formatHex(hash);
+        } catch (NoSuchAlgorithmException e) {
+            throw new IllegalStateException("Algoritmo SHA-256 non disponibile sulla JVM", e);
+        }
+
+        user.setSessid(sessid);
+        userRepository.save(user);
+
+        return ResponseEntity.ok(new LoginResponse(token, refreshToken));
     }
+
 }
