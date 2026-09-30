@@ -7,7 +7,6 @@ import com.example.ibuy.dto.RegisterResponse;
 import com.example.ibuy.model.User;
 import com.example.ibuy.repository.UserRepository;
 import com.example.ibuy.security.JwtService;
-import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -35,8 +34,6 @@ public class AuthController {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
-    private DataSource dataSource;
-    private String sessid;
 
     public AuthController(
             UserRepository userRepository,
@@ -71,7 +68,6 @@ public class AuthController {
                 .body(new RegisterResponse(newUser.getMail(), newUser.getUsername()));
     }
 
-    @Transactional
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest request) {
         Optional<User> userOptional = userRepository.findByUsername(request.username());
