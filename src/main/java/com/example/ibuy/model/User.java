@@ -59,5 +59,8 @@ public class User {
         this.password = password;
     }
 
+    public String getSessid() { return sessid; }
+
     public void setSessid (String sessid) { this.sessid = sessid; }
+
 }
